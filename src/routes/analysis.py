@@ -109,23 +109,23 @@ def analyze_market():
                     'fallback_available': False
                 }), 503
             
-            # Verifica se é erro de dados insuficientes
-            elif "DADOS INSUFICIENTES" in str(e) or "PESQUISA INSUFICIENTE" in str(e):
+            # Verifica se é erro de dados insuficientes - NÃO ACEITA MAIS FALLBACKS
+            elif "DADOS INSUFICIENTES" in str(e) or "PESQUISA INSUFICIENTE" in str(e) or "QUALIDADE INSUFICIENTE" in str(e):
                 return jsonify({
-                    'error': 'Dados insuficientes para análise completa',
+                    'error': 'Dados insuficientes para análise ultra-detalhada',
                     'message': str(e),
                     'timestamp': datetime.now().isoformat(),
-                    'recommendation': 'Tente com um segmento mais específico ou adicione mais informações',
-                    'retry_suggested': True,
-                    'fallback_available': True,
+                    'recommendation': 'Configure todas as APIs necessárias e forneça dados mais específicos. Sistema não aceita análises de baixa qualidade.',
+                    'retry_suggested': False,
+                    'fallback_available': False,
                     'search_status': production_search_manager.get_provider_status()
                 }), 422
             
             return jsonify({
-                'error': 'Análise falhou por dados insuficientes',
+                'error': 'Análise ultra-detalhada falhou - Sistema não aceita fallbacks',
                 'message': str(e),
                 'timestamp': datetime.now().isoformat(),
-                'recommendation': 'Configure todas as APIs necessárias e verifique conectividade',
+                'recommendation': 'Configure TODAS as APIs necessárias. Sistema exige qualidade máxima.',
                 'required_apis': [
                     'GEMINI_API_KEY ou OPENAI_API_KEY (obrigatório)',
                     'GROQ_API_KEY (recomendado para backup)',

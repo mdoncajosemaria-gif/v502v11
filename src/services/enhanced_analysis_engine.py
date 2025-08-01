@@ -891,9 +891,9 @@ CRÍTICO: Use APENAS dados REAIS da pesquisa fornecida. NUNCA invente ou simule 
         }
     
     def _generate_basic_analysis(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """REMOVIDO - Sistema não gera mais análises básicas simuladas"""
+        """REMOVIDO COMPLETAMENTE - Sistema não aceita mais fallbacks ou simulações"""
         
-        raise Exception("ANÁLISE BÁSICA REMOVIDA: Sistema não gera mais conteúdo simulado. Configure APIs de IA.")
+        raise Exception("FALLBACKS REMOVIDOS: Sistema exige análise ultra-detalhada com dados reais. Configure todas as APIs.")
     
     def _calculate_quality_score(self, analysis: Dict[str, Any]) -> float:
         """Calcula score de qualidade da análise"""
@@ -918,20 +918,20 @@ CRÍTICO: Use APENAS dados REAIS da pesquisa fornecida. NUNCA invente ou simule 
         
         # Pontuação por insights (20 pontos)
         insights = analysis.get("insights_exclusivos", [])
-        if len(insights) >= 5:
+        if len(insights) >= 15:  # Aumentado para 15 insights mínimos
             score += 20.0
-        elif len(insights) >= 3:
+        elif len(insights) >= 10:
             score += 15.0
-        elif len(insights) >= 1:
+        elif len(insights) >= 5:
             score += 10.0
         
         return min(score, max_score)
     
     def _generate_fallback_analysis(self, data: Dict[str, Any], error: str) -> Dict[str, Any]:
-        """REMOVIDO - Sistema não gera mais análises de emergência simuladas"""
+        """REMOVIDO COMPLETAMENTE - Sistema não aceita fallbacks"""
         
         logger.error(f"FALLBACK REMOVIDO - Erro: {error}")
-        raise Exception(f"ANÁLISE FALHOU: {error}. Configure APIs corretamente e tente novamente.")
+        raise Exception(f"SISTEMA NÃO ACEITA FALLBACKS: {error}. Configure TODAS as APIs e forneça dados completos.")
 
 # Instância global do motor
 enhanced_analysis_engine = EnhancedAnalysisEngine()

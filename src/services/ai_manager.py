@@ -221,6 +221,48 @@ class AIManager:
             self._record_failure(provider_name, str(e))
             return self._try_fallback(prompt, max_tokens, exclude=[provider_name])
     
+    def generate_parallel_analysis(self, prompts: List[Dict[str, Any]], max_tokens: int = 8192) -> Dict[str, Any]:
+        """Gera múltiplas análises em paralelo usando diferentes provedores"""
+        
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        
+        results = {}
+        
+        with ThreadPoolExecutor(max_workers=len(prompts)) as executor:
+            future_to_prompt = {}
+            
+            for prompt_data in prompts:
+                prompt_id = prompt_data['id']
+                prompt_text = prompt_data['prompt']
+                preferred_provider = prompt_data.get('provider')
+                
+                future = executor.submit(
+                    self.generate_analysis, 
+                    prompt_text, 
+                    max_tokens, 
+                    preferred_provider
+                )
+                future_to_prompt[future] = prompt_id
+            
+            # Coleta resultados
+            for future in as_completed(future_to_prompt, timeout=600):
+                prompt_id = future_to_prompt[future]
+                try:
+                    result = future.result()
+                    results[prompt_id] = {
+                        'success': bool(result),
+                        'content': result,
+                        'error': None
+                    }
+                except Exception as e:
+                    results[prompt_id] = {
+                        'success': False,
+                        'content': None,
+                        'error': str(e)
+                    }
+        
+        return results
+    
     def _record_success(self, provider_name: str):
         """Registra sucesso do provedor"""
         if provider_name in self.providers:
